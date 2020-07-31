@@ -3,6 +3,7 @@ import "./MainCss.css";
 import { InputGroup, Button, Image } from "react-bootstrap";
 import { connect } from "react-redux";
 import { selectSongThunk } from "../utilitis";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 
 const mapStateToProps = (state) => state;
 
@@ -11,6 +12,11 @@ const mapDispatchToProps = (dispatch) => ({
   togglePlay: () =>
     dispatch({
       type: "TOGGLE_PLAY",
+    }),
+  likeSong: (id) =>
+    dispatch({
+      type: "LIKE_SONG",
+      payload: id,
     }),
 });
 class Footer extends React.Component {
@@ -30,33 +36,26 @@ class Footer extends React.Component {
   };
 
   playNext = () => {
-    const findIndex = this.props.albumInfo.tracksList.indexOf(
-      this.props.selectedSong[0].preview
-    );
-    if (findIndex !== this.props.albumInfo.tracksList.length - 1) {
-      const findNext = this.props.albumInfo.tracksList.slice(
+    const findIndex = this.props.tracksList.indexOf(this.props.selectedSong[0]);
+    if (findIndex !== this.props.tracksList.length - 1) {
+      const findNext = this.props.tracksList.slice(
         findIndex + 1,
         findIndex + 2
       );
 
-      const findId = this.props.albumInfo.tracks.data.find(
-        (track) => track.preview === findNext[0]
+      const findId = this.props.tracksList.find(
+        (track) => track.preview === findNext[0].preview
       );
 
       this.props.selectSong(findId.id);
     }
   };
   playPrevious = () => {
-    const findIndex = this.props.albumInfo.tracksList.indexOf(
-      this.props.selectedSong[0].preview
-    );
+    const findIndex = this.props.tracksList.indexOf(this.props.selectedSong[0]);
     if (findIndex !== 0) {
-      const findNext = this.props.albumInfo.tracksList.slice(
-        findIndex - 1,
-        findIndex
-      );
-      const findId = this.props.albumInfo.tracks.data.find(
-        (track) => track.preview === findNext[0]
+      const findNext = this.props.tracksList.slice(findIndex - 1, findIndex);
+      const findId = this.props.tracksList.find(
+        (track) => track.preview === findNext[0].preview
       );
 
       this.props.selectSong(findId.id);
@@ -80,7 +79,32 @@ class Footer extends React.Component {
                   this.props.selectedSong[0].artist.name}
               </label>
             </div>
-            <i className='fa fa-heart ml-3 pt-3'></i>
+            {this.props.likedSongs &&
+            this.props.likedSongs.indexOf(
+              this.props.selectedSong && this.props.selectedSong[0].id
+            ) !== -1 ? (
+              <AiFillHeart
+                onClick={() =>
+                  this.props.likeSong(this.props.selectedSong[0].id)
+                }
+                style={{
+                  fontSize: "25px",
+                  marginTop: "5px",
+                  marginLeft: "5px",
+                }}
+              />
+            ) : (
+              <AiOutlineHeart
+                onClick={() =>
+                  this.props.likeSong(this.props.selectedSong[0].id)
+                }
+                style={{
+                  fontSize: "25px",
+                  marginTop: "5px",
+                  marginLeft: "5px",
+                }}
+              />
+            )}
             <i className='fa fa-window-maximize ml-3 pt-3'></i>
           </div>
           <div className='col p-1'>

@@ -14,6 +14,7 @@ const initialStore = {
   albumInfo: null,
   selectedSong: null,
   playing: false,
+  likedSongs: [],
 };
 
 export default function configureStore() {

@@ -62,3 +62,44 @@ export const selectSongThunk = (id) => {
     });
   };
 };
+
+export const fetchArtistInfos = (id) => {
+  console.log(id);
+  return (dispatch, getState) => {
+    let artist = [];
+    Promise.all([
+      fetch("https://deezerdevs-deezer.p.rapidapi.com/artist/" + id, {
+        method: "GET",
+        headers: {
+          "x-rapidapi-host": "deezerdevs-deezer.p.rapidapi.com",
+          "x-rapidapi-key":
+            "b0688e745dmsh41b788a14af44c3p1bd80cjsn95f97f3e6443",
+        },
+      })
+        .then((res) => res.json())
+        .then((respObj) => artist.push(respObj)),
+      fetch(
+        "https://deezerdevs-deezer.p.rapidapi.com/artist/" +
+          id +
+          "/top?limit=50",
+        {
+          method: "GET",
+          headers: {
+            "x-rapidapi-host": "deezerdevs-deezer.p.rapidapi.com",
+            "x-rapidapi-key":
+              "b0688e745dmsh41b788a14af44c3p1bd80cjsn95f97f3e6443",
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((respObj) => artist.push(respObj)),
+    ])
+      .then(() => console.log(artist))
+      .then(() =>
+        dispatch({
+          type: "FETCH_ARTIST",
+          payload: { artist: artist[0], topSongs: artist[1] },
+        })
+      );
+  };
+};

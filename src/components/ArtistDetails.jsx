@@ -1,65 +1,25 @@
 import React, { Component } from "react";
 import { Image, Col, Row, Spinner } from "react-bootstrap";
 import "./MainCss.css";
+import { connect } from "react-redux";
+import { fetchArtistInfos, selectSongThunk } from "../utilitis";
+
+const mapStateToProps = (state) => state;
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchArtist: (id) => dispatch(fetchArtistInfos(id)),
+  selectSong: (id) => dispatch(selectSongThunk(id)),
+});
 
 class ArtistDetails extends Component {
-  state = {
-    loading: true,
-    artist: undefined,
-    artistTopSongs: undefined,
-  };
-
   componentDidMount = async () => {
-    Promise.all([
-      fetch(
-        "https://deezerdevs-deezer.p.rapidapi.com/artist/" +
-          this.props.match.params.id,
-        {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "deezerdevs-deezer.p.rapidapi.com",
-            "x-rapidapi-key":
-              "b0688e745dmsh41b788a14af44c3p1bd80cjsn95f97f3e6443",
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((respObj) =>
-          this.setState({
-            artist: respObj,
-          })
-        ),
-      fetch(
-        "https://deezerdevs-deezer.p.rapidapi.com/artist/" +
-          this.props.match.params.id +
-          "/top?limit=50",
-        {
-          method: "GET",
-          headers: {
-            "x-rapidapi-host": "deezerdevs-deezer.p.rapidapi.com",
-            "x-rapidapi-key":
-              "b0688e745dmsh41b788a14af44c3p1bd80cjsn95f97f3e6443",
-          },
-        }
-      )
-        .then((res) => res.json())
-        .then((respObj) =>
-          this.setState({
-            artistTopSongs: respObj,
-          })
-        ),
-    ])
-      .then(() =>
-        this.setState({
-          loading: false,
-        })
-      )
-      .catch((err) => {});
+    this.props.fetchArtist(this.props.match.params.id);
   };
   render() {
     return (
       <>
-        {this.state.artist && (
+        {this.props.artistInfo && console.log(this.props.artistInfo)}
+        {this.props.artistInfo && (
           <Col md={10} className='col-10 gray-bg'>
             <Row className='row row-cols-xs-1'>
               <div
@@ -68,11 +28,13 @@ class ArtistDetails extends Component {
               >
                 <div id='artist' className='card mt-5'>
                   <Image
-                    src={this.state.artist.picture_xl}
+                    src={this.props.artistInfo.artist.picture_xl}
                     style={{ height: "250px" }}
                   />
                   <p></p>
-                  <h4 id='label1'>{this.state.artist.name} - Top 50</h4>
+                  <h4 id='label1'>
+                    {this.props.artistInfo.artist.name} - Top 50
+                  </h4>
                   <button type='button' className='btn'>
                     PLAY
                   </button>
@@ -81,9 +43,18 @@ class ArtistDetails extends Component {
               </div>
               <div id='songs' className='col'>
                 <div className='card'>
-                  {this.state.artistTopSongs &&
-                    this.state.artistTopSongs.data.map((song, i) => (
-                      <div key={i}>
+                  {this.props.artistInfo &&
+                    this.props.artistInfo.topSongs.data.map((song, i) => (
+                      <div
+                        key={i}
+                        className={
+                          this.props.selectedSong &&
+                          this.props.selectedSong[0].id === song.id
+                            ? "selected"
+                            : ""
+                        }
+                        onClick={() => this.props.selectSong(song.id)}
+                      >
                         <div className='d-flex justify-content-between'>
                           <p>
                             <i className='fa fa-music pr-3'></i>
@@ -102,7 +73,7 @@ class ArtistDetails extends Component {
             </Row>
           </Col>
         )}
-        {this.state.loading && (
+        {this.props.loading.artistInfo && (
           <Col md={10} style={{ height: "90vh" }} className='col-10 gray-bg'>
             {console.log(this.props)}
             <Row className='row row-cols-xs-1'>
@@ -131,4 +102,4 @@ class ArtistDetails extends Component {
   }
 }
 
-export default ArtistDetails;
+export default connect(mapStateToProps, mapDispatchToProps)(ArtistDetails);
