@@ -95,8 +95,10 @@ class Footer extends React.Component {
               />
             ) : (
               <AiOutlineHeart
-                onClick={() =>
-                  this.props.likeSong(this.props.selectedSong[0].id)
+                onClick={
+                  this.props.selectedSong !== null
+                    ? () => this.props.likeSong(this.props.selectedSong[0].id)
+                    : () => {}
                 }
                 style={{
                   fontSize: "25px",

@@ -296,6 +296,10 @@ input:focus {
   outline: none;
 }
 
+a {
+  color: white !important;
+}
+
 .songNr {
   display: none;
 }
