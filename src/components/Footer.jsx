@@ -2,25 +2,64 @@ import React from "react";
 import "./MainCss.css";
 import { InputGroup, Button, Image } from "react-bootstrap";
 import { connect } from "react-redux";
+import { selectSongThunk } from "../utilitis";
 
 const mapStateToProps = (state) => state;
 
+const mapDispatchToProps = (dispatch) => ({
+  selectSong: (id) => dispatch(selectSongThunk(id)),
+  togglePlay: () =>
+    dispatch({
+      type: "TOGGLE_PLAY",
+    }),
+});
 class Footer extends React.Component {
   constructor(props) {
     super(props);
     this.myRef = React.createRef();
-    this.state = {
-      playing: false,
-    };
   }
 
   playButton = () => {
-    if (this.state.playing) {
+    if (this.props.playing) {
       this.myRef.current.pause();
-      this.setState({ playing: false });
+      this.props.togglePlay();
     } else {
       this.myRef.current.play();
-      this.setState({ playing: true });
+      this.props.togglePlay();
+    }
+  };
+
+  playNext = () => {
+    const findIndex = this.props.albumInfo.tracksList.indexOf(
+      this.props.selectedSong[0].preview
+    );
+    if (findIndex !== this.props.albumInfo.tracksList.length - 1) {
+      const findNext = this.props.albumInfo.tracksList.slice(
+        findIndex + 1,
+        findIndex + 2
+      );
+
+      const findId = this.props.albumInfo.tracks.data.find(
+        (track) => track.preview === findNext[0]
+      );
+
+      this.props.selectSong(findId.id);
+    }
+  };
+  playPrevious = () => {
+    const findIndex = this.props.albumInfo.tracksList.indexOf(
+      this.props.selectedSong[0].preview
+    );
+    if (findIndex !== 0) {
+      const findNext = this.props.albumInfo.tracksList.slice(
+        findIndex - 1,
+        findIndex
+      );
+      const findId = this.props.albumInfo.tracks.data.find(
+        (track) => track.preview === findNext[0]
+      );
+
+      this.props.selectSong(findId.id);
     }
   };
   render() {
@@ -28,68 +67,78 @@ class Footer extends React.Component {
       <footer>
         <div
           style={{ display: "flex", justifyContent: "space-between" }}
-          className="row light-gray-bg"
+          className='row light-gray-bg'
         >
-          <div className="col-3 d-flex p-2 pl-2 align-center footer_hide">
-            <Image src="/assets/avatar.png" width="45px" height="45px" />
-            <div className="pb-0 mb-0">
-              <p id="songTitle" className="pl-3 p-0 m-0"></p>
-              <label id="artistName" className="pl-3 "></label>
+          <div className='col-3 d-flex p-2 pl-2 align-center footer_hide'>
+            <Image src='/assets/avatar.png' width='45px' height='45px' />
+            <div className='pb-0 mb-0'>
+              <p id='songTitle' className='pl-3 p-0 m-0'>
+                {this.props.selectedSong && this.props.selectedSong[0].title}
+              </p>
+              <label id='artistName' className='pl-3 '>
+                {this.props.selectedSong &&
+                  this.props.selectedSong[0].artist.name}
+              </label>
             </div>
-            <i className="fa fa-heart ml-3 pt-3"></i>
-            <i className="fa fa-window-maximize ml-3 pt-3"></i>
+            <i className='fa fa-heart ml-3 pt-3'></i>
+            <i className='fa fa-window-maximize ml-3 pt-3'></i>
           </div>
-          <div className="col p-1">
-            <div className="row-1">
+          <div className='col p-1'>
+            <div className='row-1'>
               <div
-                id="icons"
-                className="col d-flex justify-content-center align-center"
+                id='icons'
+                className='col d-flex justify-content-center align-center'
               >
                 <Button>
-                  <i className="fa fa-random pr-2 pt-1"></i>
+                  <i className='fa fa-random pr-2 pt-1'></i>
                 </Button>
-                <Button id="playBack">
-                  <i className="fa fa-step-backward pr-2 pt-1"></i>
+                <Button id='playBack' onClick={this.playPrevious}>
+                  <i className='fa fa-step-backward pr-2 pt-1'></i>
                 </Button>
-                <Button id="play" onClick={this.playButton}>
+
+                <Button id='play' onClick={this.playButton}>
                   <audio
-                    id="audio"
+                    id='audio'
                     ref={this.myRef}
-                    src={this.props.selectedSong}
+                    autoPlay='true'
+                    src={
+                      this.props.selectedSong &&
+                      this.props.selectedSong[0].preview
+                    }
                   ></audio>
-                  <i className="fa fa-play-circle pr-2"></i>
+                  <i className='fa fa-play-circle pr-2'></i>
                 </Button>
-                <Button id="playNext">
-                  <i className="fa fa-step-forward pr-2 pt-1"></i>
+                <Button id='playNext' onClick={this.playNext}>
+                  <i className='fa fa-step-forward pr-2 pt-1'></i>
                 </Button>
-                <Button id="loop">
-                  <i className="fa fa-retweet pt-1"></i>
+                <Button id='loop'>
+                  <i className='fa fa-retweet pt-1'></i>
                 </Button>
               </div>
-              <div className="col d-flex footer_hide">
-                <label id="currentSongTime">0:00</label>
-                <div className="progress">
+              <div className='col d-flex footer_hide'>
+                <label id='currentSongTime'>0:00</label>
+                <div className='progress'>
                   <div
-                    className="progress-bar"
-                    role="progressbar"
-                    aria-valuenow="25"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
+                    className='progress-bar'
+                    role='progressbar'
+                    aria-valuenow='25'
+                    aria-valuemin='0'
+                    aria-valuemax='100'
                   ></div>
                 </div>
-                <label id="songLength">2:54</label>
+                <label id='songLength'>2:54</label>
               </div>
             </div>
           </div>
-          <div className="col-3 d-flex p-2 pl-2 justify-content-end align-center footer_hide">
+          <div className='col-3 d-flex p-2 pl-2 justify-content-end align-center footer_hide'>
             <Button>
-              <i className="fa fa-bars ml-3 pt-3"></i>
+              <i className='fa fa-bars ml-3 pt-3'></i>
             </Button>
             <Button>
-              <i className="fa fa-headphones ml-3 pt-3"></i>
+              <i className='fa fa-headphones ml-3 pt-3'></i>
             </Button>
-            <Button id="volumeIcon">
-              <i className="fa fa-volume-up ml-3 pt-3"></i>
+            <Button id='volumeIcon'>
+              <i className='fa fa-volume-up ml-3 pt-3'></i>
             </Button>
           </div>
         </div>
@@ -98,4 +147,4 @@ class Footer extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)(Footer);
+export default connect(mapStateToProps, mapDispatchToProps)(Footer);

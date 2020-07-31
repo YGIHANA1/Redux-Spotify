@@ -4,11 +4,12 @@ import Song from "./Song";
 import "./MainCss.css";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { fetchAlbumInfos } from "../utilitis";
+import { fetchAlbumInfos, selectSongThunk } from "../utilitis";
 
 const mapStateToProps = (state) => state;
 const mapDispatchToProps = (dispatch) => ({
   fetchAlbumInfo: (id) => dispatch(fetchAlbumInfos(id)),
+  selectSong: (id) => dispatch(selectSongThunk(id)),
 });
 class AlbumDetails extends Component {
   componentDidMount() {
@@ -49,7 +50,11 @@ class AlbumDetails extends Component {
               <div id='songs' className='col'>
                 <div className='card'>
                   {this.props.albumInfo.tracks.data.map((song, i) => (
-                    <Song key={i} song={song} />
+                    <Song
+                      selectSong={this.props.selectSong}
+                      key={i}
+                      song={song}
+                    />
                   ))}
                 </div>
               </div>

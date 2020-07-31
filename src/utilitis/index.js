@@ -53,3 +53,12 @@ export const fetchAlbumInfos = (id) => {
       );
   };
 };
+
+export const selectSongThunk = (id) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: "SELECT_SONG",
+      payload: id,
+    });
+  };
+};

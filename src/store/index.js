@@ -12,8 +12,8 @@ const initialStore = {
     artistInfo: true,
   },
   albumInfo: null,
-  selectedSong:
-    "https://cdns-preview-e.dzcdn.net/stream/c-eb54f4257d17cd6d4085c7060699370b-12.mp3",
+  selectedSong: null,
+  playing: false,
 };
 
 export default function configureStore() {
